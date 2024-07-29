@@ -2,12 +2,13 @@ import React from 'react';
 import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
 
 const ErrorPage: React.FC = () => {
+  // you don't need to explicitly set error to `unknown`
   const error = useRouteError();
   let errorMessage: string;
 
   if (isRouteErrorResponse(error)) {
     // error is type `ErrorResponse`
-    errorMessage = error.statusText;
+    errorMessage = error?.data || error.statusText;
   } else if (error instanceof Error) {
     errorMessage = error.message;
   } else if (typeof error === 'string') {

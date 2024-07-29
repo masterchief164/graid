@@ -12,7 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import { Fab, ListItem, Menu, MenuItem } from '@mui/material';
+import { Avatar, Button, Fab, ListItem, Menu, MenuItem } from '@mui/material';
 import SearchBar from '../SearchBar/SearchBar';
 import GDriveIcon from '../../assets/GdriveIcon.svg';
 import AddIcon from '@mui/icons-material/Add';
@@ -20,6 +20,7 @@ import HomeIcon from '@mui/icons-material/HomeOutlined';
 import StarIcon from '@mui/icons-material/StarBorderOutlined';
 import TrashIcon from '@mui/icons-material/DeleteOutline';
 import { Link as RouterLink } from 'react-router-dom';
+import GoogleIcon from '../../assets/Google.svg';
 
 const drawerWidth = 240;
 type PermanentDrawerProps = {
@@ -37,6 +38,13 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
     setAnchorElement(null);
   };
 
+  const startGoogleLogin = (): void => {
+    console.log('Google login started');
+    const csrfToken = window.electronAPI.generateEntropy(32);
+    window.sessionStorage.setItem('csrfToken', csrfToken);
+    window.electronAPI.startGoogleLogin(csrfToken);
+  };
+
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
       <CssBaseline />
@@ -47,6 +55,9 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
       >
         <Toolbar>
           <SearchBar setSearchQuery={setSearchQuery} />
+          <Button onClick={startGoogleLogin}>
+            <Avatar src={GoogleIcon} alt={'Google Icon'} sx={{ ml: '10px' }} />
+          </Button>
         </Toolbar>
       </AppBar>
       <Drawer

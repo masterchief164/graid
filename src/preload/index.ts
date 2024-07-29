@@ -1,22 +1,28 @@
-import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge } from 'electron';
+import { electronAPI } from '@electron-toolkit/preload';
+import { openExternal } from './utils/common';
+import { generateEntropy, startGoogleLogin } from '../main/services/GoogleLoginService';
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  openExternal: (url: string): void => openExternal(url),
+  startGoogleLogin: (state: string): void => startGoogleLogin(state),
+  generateEntropy
+};
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('electron', electronAPI);
+    contextBridge.exposeInMainWorld('electronAPI', api);
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 } else {
   // @ts-ignore (define in dts)
-  window.electron = electronAPI
+  window.electron = electronAPI;
   // @ts-ignore (define in dts)
-  window.api = api
+  window.api = api;
 }

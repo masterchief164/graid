@@ -8,7 +8,8 @@ export const startGoogleLogin = (state: string): void => {
 const generateUrl = (state: string): string => {
   const baseUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
   const entropy = generateEntropy(64);
-  const codeChallenge = generateCodeChallenge(entropy);
+  const codeChallenge = generateCodeChallenge(entropy).replace('=', '');
+  console.log(codeChallenge);
   const scopes = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -18,16 +19,16 @@ const generateUrl = (state: string): string => {
   ];
   const params = new URLSearchParams({
     client_id: '213863297508-5811drcat6kuff7kh4n81juiq62e19ov.apps.googleusercontent.com',
-    redirect_uri: 'graid://login/google', // use a temp frontend to redirect to the app
+    redirect_uri: 'http://localhost:3000/login/google', // use a temp frontend to redirect to the app
     response_type: 'code',
     scope: scopes.join(' '),
-    code_challenge: codeChallenge,
     code_challenge_method: 'S256',
     state,
     access_type: 'offline'
   }).toString();
   console.log(params);
-  return `${baseUrl}?${params}`;
+  console.log(codeChallenge);
+  return `${baseUrl}?$code_challenge=${codeChallenge}&${params}`;
 };
 
 export const generateEntropy = (length: number): string => {

@@ -3,7 +3,6 @@ import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import path from 'node:path';
-import { dialog } from 'electron';
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -32,12 +31,12 @@ function createWindow(): void {
     app.quit();
     return;
   } else {
-    app.on('second-instance', (_, commandLine) => {
+    app.on('second-instance', () => {
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore();
         mainWindow.focus();
       }
-      dialog.showMessageBox({ message: `Arrived from ${commandLine.pop()}` });
+      // dialog.showMessageBox({ message: `Arrived from ${commandLine.pop()}` });
     });
   }
 
@@ -58,6 +57,14 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
 }
+
+app.on('open-url', (event, data) => {
+  console.log(data);
+  event.preventDefault();
+  if (mainWindow) {
+    mainWindow.webContents.send('open-url', data);
+  }
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -84,7 +91,7 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
-
+app.setAsDefaultProtocolClient('graid');
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.

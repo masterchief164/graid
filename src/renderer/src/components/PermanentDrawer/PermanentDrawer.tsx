@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -19,7 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import HomeIcon from '@mui/icons-material/HomeOutlined';
 import StarIcon from '@mui/icons-material/StarBorderOutlined';
 import TrashIcon from '@mui/icons-material/DeleteOutline';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import GoogleIcon from '../../assets/Google.svg';
 
 const drawerWidth = 240;
@@ -37,6 +37,14 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
   const handleClose = (): void => {
     setAnchorElement(null);
   };
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    window.electron.ipcRenderer.on('navigate', (_, path) => {
+      console.log(path);
+      navigate(path);
+    });
+  }, [navigate]);
 
   const startGoogleLogin = (): void => {
     console.log('Google login started');

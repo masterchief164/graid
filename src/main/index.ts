@@ -11,7 +11,9 @@ if (process.defaultApp) {
 } else {
   app.setAsDefaultProtocolClient('graid');
 }
+
 let mainWindow: BrowserWindow | null;
+
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -31,12 +33,15 @@ function createWindow(): void {
     app.quit();
     return;
   } else {
-    app.on('second-instance', () => {
+    app.on('second-instance', (_, commandLine) => {
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore();
         mainWindow.focus();
       }
-      // dialog.showMessageBox({ message: `Arrived from ${commandLine.pop()}` });
+      const url = commandLine.pop();
+      if (url) {
+        openInMainWindow(url);
+      }
     });
   }
 
@@ -58,13 +63,17 @@ function createWindow(): void {
   }
 }
 
-app.on('open-url', (event, data) => {
-  console.log(data);
+app.on('open-url', (event, url) => {
   event.preventDefault();
-  if (mainWindow) {
-    mainWindow.webContents.send('open-url', data);
-  }
+  openInMainWindow(url);
 });
+
+function openInMainWindow(url: string): void {
+  if (mainWindow) {
+    const path = url.split('://')[1];
+    mainWindow.webContents.send('navigate', path);
+  }
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

@@ -1,11 +1,9 @@
 import { contextBridge } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
-import { openExternal } from './utils/common';
 import { generateEntropy, startGoogleLogin } from '../main/services/GoogleLoginService';
 
 // Custom APIs for renderer
 const api = {
-  openExternal: (url: string): void => openExternal(url),
   startGoogleLogin: (state: string): void => startGoogleLogin(state),
   generateEntropy
 };

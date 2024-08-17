@@ -4,7 +4,15 @@ import GDriveIcon from '../../assets/GdriveIcon.svg';
 
 export const LoadingPage = (): ReactElement => {
   return (
-    <div>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 'auto'
+      }}
+    >
       <div
         style={{
           display: 'flex',

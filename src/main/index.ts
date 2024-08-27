@@ -3,6 +3,7 @@ import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import path from 'node:path';
+import { initializeHandlers } from './handlers';
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -24,7 +25,8 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: true,
+      contextIsolation: true // Enable context isolation
     }
   });
 
@@ -70,6 +72,8 @@ app.on('open-url', (event, url) => {
 
 function openInMainWindow(url: string): void {
   if (mainWindow) {
+    console.log('navigating to loading');
+    console.log(url);
     const path = url.split('://')[1];
     mainWindow.webContents.send('navigate', path);
   }
@@ -91,7 +95,7 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'));
-
+  initializeHandlers(ipcMain);
   createWindow();
 
   app.on('activate', function () {

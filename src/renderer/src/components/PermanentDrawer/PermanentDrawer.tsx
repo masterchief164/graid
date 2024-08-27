@@ -40,15 +40,18 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
 
   const navigate = useNavigate();
   useEffect(() => {
-    window.electron.ipcRenderer.on('navigate', (_, path) => {
-      console.log(path);
+    console.log('PermanentDrawer.tsx: useEffect(() => { ... })');
+    window.electronAPI.navigate((path) => {
+      console.log(
+        'PermanentDrawer.tsx: useEffect(() => { ... }): window.electronAPI.onNavigate((_, path) => { ... })'
+      );
       navigate(path);
     });
-  }, [navigate]);
+  }, []);
 
-  const startGoogleLogin = (): void => {
+  const startGoogleLogin = async (): Promise<void> => {
     console.log('Google login started');
-    const csrfToken = window.electronAPI.generateEntropy(32);
+    const csrfToken = await window.electronAPI.generateEntropy(32);
     window.sessionStorage.setItem('csrfToken', csrfToken);
     window.electronAPI.startGoogleLogin(csrfToken);
   };

@@ -1,11 +1,13 @@
-import { contextBridge } from 'electron';
-import { electronAPI } from '@electron-toolkit/preload';
-import { generateEntropy, startGoogleLogin } from '../main/services/GoogleLoginService';
+import { contextBridge, ipcRenderer } from 'electron';
 
 // Custom APIs for renderer
 const api = {
-  startGoogleLogin: (state: string): void => startGoogleLogin(state),
-  generateEntropy
+  startGoogleLogin: (state: string): void => ipcRenderer.send('startGoogleLogin', state),
+  generateEntropy: (length: number): Promise<string> =>
+    ipcRenderer.invoke('generateEntropy', length),
+  getAccessTokens: (code: string) => ipcRenderer.invoke('getAccessTokens', code),
+  navigate: (callback: (path: string) => void) =>
+    ipcRenderer.on('navigate', (_event, path) => callback(path))
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
@@ -13,14 +15,11 @@ const api = {
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI);
     contextBridge.exposeInMainWorld('electronAPI', api);
   } catch (error) {
     console.error(error);
   }
 } else {
-  // @ts-ignore (define in dts)
-  window.electron = electronAPI;
   // @ts-ignore (define in dts)
   window.api = api;
 }

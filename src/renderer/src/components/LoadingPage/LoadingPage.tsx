@@ -1,8 +1,18 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { Typography, CircularProgress } from '@mui/material';
 import GDriveIcon from '../../assets/GdriveIcon.svg';
+import { useNavigate } from 'react-router-dom';
 
 export const LoadingPage = (): ReactElement => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const code = window.location.href.split('code=')[1];
+    window.electronAPI.getAccessTokens(code).then((status: number) => {
+      console.log(status);
+      if (status === 1) navigate('/');
+    });
+  }, []);
+
   return (
     <div
       style={{

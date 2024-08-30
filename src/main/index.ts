@@ -4,6 +4,9 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import path from 'node:path';
 import { initializeHandlers } from './handlers';
+import expressApp from './services/experssServer';
+import express from 'express';
+import fs from 'node:fs/promises';
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -72,8 +75,6 @@ app.on('open-url', (event, url) => {
 
 function openInMainWindow(url: string): void {
   if (mainWindow) {
-    console.log('navigating to loading');
-    console.log(url);
     const path = url.split('://')[1];
     mainWindow.webContents.send('navigate', path);
   }
@@ -85,6 +86,13 @@ function openInMainWindow(url: string): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
+  expressApp.get('/login/google', async (req: express.Request, res: express.Response) => {
+    const code = (req.query.code ?? '') as string;
+    let html = await fs.readFile(path.join(__dirname, './index.html'), 'utf-8');
+    html = html.replace('code=code', `code=${code}`);
+    res.header('Content-Type', 'text/html');
+    res.send(html);
+  });
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

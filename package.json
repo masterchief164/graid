@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "Shaswat Gupta <shaswat2001.sg@gmail.com>",
   "homepage": "https://electron-vite.org",
   "scripts": {
     "format": "prettier --write .",
@@ -18,7 +18,8 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux"
+    "build:linux": "electron-vite build && electron-builder --linux deb",
+    "build:all": "npm run build && electron-builder -wl"
   },
   "dependencies": {
     "@coreui/coreui": "^5.1.1",
@@ -33,6 +34,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.4",
     "electron-updater": "^6.2.1",
+    "express": "^4.19.2",
     "jose": "^5.8.0",
     "level": "^8.0.1",
     "react-redux": "^9.1.2",
@@ -44,6 +46,7 @@
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/express": "^4.17.21",
     "@types/node": "^18.19.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -57,19 +60,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.5.4",
-    "vite": "^5.4.1"
-  },
-  "build": {
-    "appId": "shaswat.electron.graid",
-    "protocols": {
-      "name": "graid",
-      "schemes": [
-        "graid"
-      ]
-    },
-    "mac": {
-      "category": "public.app-category.Reference"
-    },
-    "win": {}
+    "vite": "^5.4.1",
+    "vite-plugin-static-copy": "^1.0.6"
   }
 }

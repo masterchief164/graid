@@ -2,14 +2,23 @@ import { ReactElement, useEffect } from 'react';
 import { Typography, CircularProgress } from '@mui/material';
 import GDriveIcon from '../../assets/GdriveIcon.svg';
 import { useNavigate } from 'react-router-dom';
+import { AppDispatch } from '../../store';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../slices/userSlice';
+import { LoginStatus } from '../../../../shared';
 
 export const LoadingPage = (): ReactElement => {
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+
   useEffect(() => {
     const code = window.location.href.split('code=')[1];
-    window.electronAPI.getAccessTokens(code).then((status: number) => {
-      console.log(status);
-      if (status === 1) navigate('/');
+    window.electronAPI.getAccessTokens(code).then((loginStatus: LoginStatus) => {
+      console.log(loginStatus);
+      if (loginStatus.status === 1) {
+        dispatch(loginSuccess(loginStatus.userData!));
+        navigate('/');
+      }
     });
   }, []);
 

@@ -7,7 +7,6 @@ import { initializeHandlers } from './handlers';
 import expressApp from './services/experssServer';
 import express from 'express';
 import fs from 'node:fs/promises';
-import { getDb } from './db/db';
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -121,10 +120,6 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
-});
-
-app.on('will-quit', async () => {
-  await getDb().close();
 });
 
 // In this file you can include the rest of your app"s specific main process

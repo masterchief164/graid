@@ -5,13 +5,6 @@ import axios from 'axios';
 import { Client_ID, Client_Secret } from '../constants';
 import * as jose from 'jose';
 import { LoginStatus, UserData } from '../../shared';
-import {
-  checkRootUserExists,
-  createUser,
-  updateRootUser,
-  updateUserAuthData,
-  updateUserRefreshData
-} from './UserService';
 
 export const startGoogleLogin = (state: string): void => {
   generateUrl(state).then((url) => {
@@ -67,15 +60,9 @@ export const getAccessTokens = async (code: string): Promise<LoginStatus> => {
 
     const data: UserData = jose.decodeJwt(res.data.id_token);
     const email = data.email;
-
-    if (!(await checkRootUserExists())) {
-      await updateRootUser(email);
-    }
-    await updateUserAuthData(email, res.data.access_token);
-    await updateUserRefreshData(email, res.data.refresh_token);
-    await createUser(data);
-
-    console.log(data);
+    await getDb().put(`${email}_access_token`, res.data.access_token);
+    await getDb().put(`${email}_refresh_token`, res.data.refresh_token);
+    await getDb().put(`${email}`, data.toString());
 
     const userData: UserData = {
       email: data.email,

@@ -7,7 +7,8 @@ const api = {
     ipcRenderer.invoke('generateEntropy', length),
   getAccessTokens: (code: string) => ipcRenderer.invoke('getAccessTokens', code),
   navigate: (callback: (path: string) => void) =>
-    ipcRenderer.on('navigate', (_event, path) => callback(path))
+    ipcRenderer.on('navigate', (_event, path) => callback(path)),
+  getExistingUser: () => ipcRenderer.invoke('getExistingUser')
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -5,14 +5,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import { Avatar, Button, Fab, ListItem, Menu, MenuItem } from '@mui/material';
+import { Avatar, Fab, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material';
 import SearchBar from '../SearchBar/SearchBar';
 import GDriveIcon from '../../assets/GdriveIcon.svg';
 import AddIcon from '@mui/icons-material/Add';
@@ -21,6 +20,10 @@ import StarIcon from '@mui/icons-material/StarBorderOutlined';
 import TrashIcon from '@mui/icons-material/DeleteOutline';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import GoogleIcon from '../../assets/Google.svg';
+import { AppDispatch, RootState } from '../../store';
+import { logout } from '../../slices/userSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import AccountMenu from '../AccountMenu/AccountMenu';
 
 const drawerWidth = 240;
 type PermanentDrawerProps = {
@@ -30,21 +33,43 @@ type PermanentDrawerProps = {
 const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) => {
   const [, setSearchQuery] = React.useState<string>('');
   const [anchorElement, setAnchorElement] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorElement);
+  const dispatch: AppDispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isLogged, user } = useAppSelector((state: RootState) => state.user);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorElement(event.currentTarget);
+  };
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    console.log('PermanentDrawer.tsx: handleOpenUserMenu');
+    setAnchorElUser(event.currentTarget);
   };
   const handleClose = (): void => {
     setAnchorElement(null);
   };
 
-  const navigate = useNavigate();
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+  const handleLogout = () => {
+    dispatch(logout());
+    handleCloseUserMenu();
+  };
+
+  const settings = [
+    { name: 'Profile', action: handleCloseUserMenu },
+    { name: 'Logout', action: handleLogout }
+  ];
+
   useEffect(() => {
     console.log('PermanentDrawer.tsx: useEffect(() => { ... })');
     window.electronAPI.navigate((path) => {
       console.log(
         'PermanentDrawer.tsx: useEffect(() => { ... }): window.electronAPI.onNavigate((_, path) => { ... })'
-      );
+      ); // todo: this callback is called multiple times
       navigate(path);
     });
   }, []);
@@ -66,9 +91,19 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
       >
         <Toolbar>
           <SearchBar setSearchQuery={setSearchQuery} />
-          <Button onClick={startGoogleLogin}>
-            <Avatar src={GoogleIcon} alt={'Google Icon'} sx={{ ml: '10px' }} />
-          </Button>
+          {isLogged ? (
+            <AccountMenu
+              user={user!}
+              anchorElUser={anchorElUser}
+              handleOpenUserMenu={handleOpenUserMenu}
+              handleCloseUserMenu={handleCloseUserMenu}
+              settings={settings}
+            />
+          ) : (
+            <IconButton onClick={startGoogleLogin} sx={{ p: 0 }}>
+              <Avatar src={GoogleIcon} alt={'Google Icon'} sx={{ ml: '10px' }} />
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer

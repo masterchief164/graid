@@ -1,4 +1,5 @@
 import { generateEntropy, getAccessTokens, startGoogleLogin } from './services/GoogleLoginService';
+import { getExistingUser } from './services/UserService';
 
 export const initializeHandlers = (ipcMain: Electron.IpcMain): void => {
   ipcMain.handle('generateEntropy', (_, length: number) => generateEntropy(length));
@@ -7,5 +8,8 @@ export const initializeHandlers = (ipcMain: Electron.IpcMain): void => {
   });
   ipcMain.handle('getAccessTokens', (_, code: string) => {
     return getAccessTokens(code);
+  });
+  ipcMain.handle('getExistingUser', () => {
+    return getExistingUser();
   });
 };

@@ -18,9 +18,11 @@ interface UserState {
 }
 
 // Define the initial state using that type
+const user = await window.electronAPI.getExistingUser();
+console.log('user', user);
 const initialState: UserState = {
-  user: null,
-  isLogged: false,
+  user: user.userData,
+  isLogged: user.status === 1,
   loading: false,
   error: null
 };

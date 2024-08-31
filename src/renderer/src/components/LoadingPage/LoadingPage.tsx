@@ -3,13 +3,13 @@ import { Typography, CircularProgress } from '@mui/material';
 import GDriveIcon from '../../assets/GdriveIcon.svg';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../../store';
-import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../slices/userSlice';
 import { LoginStatus } from '../../../../shared';
+import { useAppDispatch } from '../../hooks/hooks';
 
 export const LoadingPage = (): ReactElement => {
   const navigate = useNavigate();
-  const dispatch: AppDispatch = useDispatch();
+  const dispatch: AppDispatch = useAppDispatch();
 
   useEffect(() => {
     const code = window.location.href.split('code=')[1];

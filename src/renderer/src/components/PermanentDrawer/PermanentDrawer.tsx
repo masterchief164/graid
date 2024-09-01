@@ -24,6 +24,7 @@ import { AppDispatch, RootState } from '../../store';
 import { logout } from '../../slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import AccountMenu from '../AccountMenu/AccountMenu';
+import { Settings as SettingsIcon } from '@mui/icons-material';
 
 const drawerWidth = 240;
 type PermanentDrawerProps = {
@@ -37,7 +38,7 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
   const open = Boolean(anchorElement);
   const dispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isLogged, user } = useAppSelector((state: RootState) => state.user);
+  const { isLogged } = useAppSelector((state: RootState) => state.user);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorElement(event.currentTarget);
@@ -61,7 +62,8 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
 
   const settings = [
     { name: 'Profile', action: handleCloseUserMenu },
-    { name: 'Logout', action: handleLogout }
+    { name: 'Logout', action: handleLogout },
+    { name: 'Settings', action: () => navigate('/settings') }
   ];
 
   useEffect(() => {
@@ -93,7 +95,6 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
           <SearchBar setSearchQuery={setSearchQuery} />
           {isLogged ? (
             <AccountMenu
-              user={user!}
               anchorElUser={anchorElUser}
               handleOpenUserMenu={handleOpenUserMenu}
               handleCloseUserMenu={handleCloseUserMenu}
@@ -175,6 +176,14 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
                 <TrashIcon />
               </ListItemIcon>
               <ListItemText primary={'Trash'} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding component={RouterLink} to={'/settings'}>
+            <ListItemButton>
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Settings'} />
             </ListItemButton>
           </ListItem>
         </List>

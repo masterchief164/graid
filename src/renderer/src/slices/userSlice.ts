@@ -12,19 +12,22 @@ interface UserData {
 
 interface UserState {
   user: UserData | null;
+  accounts: UserData[];
   isLogged: boolean;
   loading: boolean;
   error: string | null;
 }
 
 // Define the initial state using that type
-const user = await window.electronAPI.getExistingUser();
-console.log('user', user);
+const loginStatus = await window.electronAPI.getExistingUser();
+const accounts = await window.electronAPI.getAllAccounts();
+
 const initialState: UserState = {
-  user: user.userData,
-  isLogged: user.status === 1,
+  user: loginStatus.userData,
+  isLogged: loginStatus.status === 1,
   loading: false,
-  error: null
+  error: null,
+  accounts: [...accounts]
 };
 
 const userSlice = createSlice({

@@ -1,4 +1,4 @@
-import { LoginStatus } from '../shared';
+import { LoginStatus, UserData } from '../shared';
 
 export interface IElectronAPI {
   openExternal: (url: string) => void;
@@ -7,6 +7,7 @@ export interface IElectronAPI {
   getAccessTokens: (code: string) => Promise<LoginStatus>;
   navigate: (callback: (path: string) => void) => void;
   getExistingUser: () => Promise<LoginStatus>;
+  getAllAccounts: () => Promise<UserData[]>;
 }
 
 declare global {

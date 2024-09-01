@@ -1,5 +1,6 @@
 import { getDb } from '../db/db';
 import { LoginStatus, UserData } from '../../shared';
+import { EntryStream } from 'level-read-stream';
 
 const getUser = async (email: string): Promise<UserData> => {
   return JSON.parse(await getDb().get(`user:${email}`));
@@ -61,6 +62,16 @@ const getExistingUser = async (): Promise<LoginStatus> => {
   return { status: 1, userData: user };
 };
 
+const getAllUsers = async (): Promise<UserData[]> => {
+  const stream = new EntryStream<string, string>(getDb(), { gte: 'user:', lte: 'user:\uffff' });
+  const users: UserData[] = [];
+  for await (const { key, value } of stream) {
+    if (key === 'user:root') continue;
+    users.push(JSON.parse(value));
+  }
+  return users;
+};
+
 export {
   getUser,
   createUser,
@@ -72,5 +83,6 @@ export {
   checkUserExists,
   updateUserRefreshData,
   getUserRefreshData,
-  getExistingUser
+  getExistingUser,
+  getAllUsers
 };

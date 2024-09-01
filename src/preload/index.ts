@@ -9,7 +9,8 @@ const api = {
   navigate: (callback: (path: string) => void) =>
     ipcRenderer.on('navigate', (_event, path) => callback(path)),
   getExistingUser: () => ipcRenderer.invoke('getExistingUser'),
-  getAllAccounts: () => ipcRenderer.invoke('getAllAccounts')
+  getAllAccounts: () => ipcRenderer.invoke('getAllAccounts'),
+  getRootUser: () => ipcRenderer.invoke('getRootUser')
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

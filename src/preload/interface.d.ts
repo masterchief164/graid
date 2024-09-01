@@ -8,6 +8,7 @@ export interface IElectronAPI {
   navigate: (callback: (path: string) => void) => void;
   getExistingUser: () => Promise<LoginStatus>;
   getAllAccounts: () => Promise<UserData[]>;
+  getRootUser: () => Promise<string>;
 }
 
 declare global {

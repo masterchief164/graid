@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { UserData } from '../../../../shared';
 import React, { FunctionComponent } from 'react';
 import AccountCard from '../AccountCard/AccountCard';
-import { useAppSelector } from '../../hooks/hooks';
+import { useAppSelector } from '../../hooks';
 
 interface AccountMenuProps {
   anchorElUser: HTMLElement | null;
@@ -18,7 +18,7 @@ const AccountMenu: FunctionComponent<AccountMenuProps> = ({
   anchorElUser,
   settings
 }) => {
-  const userState = useAppSelector((state) => state.user);
+  const userState = useAppSelector((state) => state.users);
   return (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../../store';
 import { loginSuccess } from '../../slices/userSlice';
 import { LoginStatus } from '../../../../shared';
-import { useAppDispatch } from '../../hooks/hooks';
+import { useAppDispatch } from '../../hooks';
 
 export const LoadingPage = (): ReactElement => {
   const navigate = useNavigate();

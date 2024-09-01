@@ -8,7 +8,8 @@ const api = {
   getAccessTokens: (code: string) => ipcRenderer.invoke('getAccessTokens', code),
   navigate: (callback: (path: string) => void) =>
     ipcRenderer.on('navigate', (_event, path) => callback(path)),
-  getExistingUser: () => ipcRenderer.invoke('getExistingUser')
+  getExistingUser: () => ipcRenderer.invoke('getExistingUser'),
+  getAllAccounts: () => ipcRenderer.invoke('getAllAccounts')
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

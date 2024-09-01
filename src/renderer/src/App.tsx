@@ -7,6 +7,7 @@ import PermanentDrawer from './components/PermanentDrawer/PermanentDrawer';
 import { LoadingPage } from './components/LoadingPage/LoadingPage';
 import { Provider } from 'react-redux';
 import store from './store';
+import Settings from './components/Settings/Settings';
 
 function App(): ReactElement {
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping');
@@ -20,6 +21,7 @@ function App(): ReactElement {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/login/google" element={<LoadingPage />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<ErrorPage />} />
               </Routes>
             </PermanentDrawer>

@@ -1,10 +1,14 @@
 # graid
 
+
+An application to help you combine multiple Google Drive accounts and use them as a single volume.
+
+This also allows you to specify the Raid configuration to use for a file system. Raid 0 is set as default.
+Just add your Google accounts and start using them as a single volume.
+
+
 An Electron application with React and TypeScript
 
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 ## Project Setup
 

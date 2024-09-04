@@ -1,6 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// export const raidVersions = ['RAID 0', 'RAID 1', 'RAID 5', 'RAID 6', 'RAID 10'];
 export const raidVersions = {
   'RAID 0': 2,
   'RAID 1': 2,
@@ -11,30 +10,40 @@ export const raidVersions = {
 };
 
 export type RaidVersionTypes = keyof typeof raidVersions;
+export type RaidConfig = {
+  raidVersion: RaidVersionTypes;
+  blockSize: number;
+};
+
 interface SettingsState {
   rootUser: string;
   darkMode: boolean;
-  raidConfig: RaidVersionTypes;
+  raidConfig: RaidConfig;
 }
 const rootUser = await window.electronAPI.getRootUser();
+const initialRaidConfig = await window.electronAPI.getRaidConfig();
 const initialState: SettingsState = {
   rootUser: rootUser,
   darkMode: true,
-  raidConfig: raidVersions[0]
+  raidConfig: initialRaidConfig
 };
+
+export const updateRaidConfig = createAsyncThunk<void, RaidConfig>(
+  'settings/updateRaidConfig',
+  async (raidConfig: RaidConfig) => {
+    return await window.electronAPI.setRaidConfig(raidConfig);
+  }
+);
 
 const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    setRootUser: (state, action) => {
-      state.rootUser = action.payload;
-    },
     switchTheme: (state) => {
       state.darkMode = !state.darkMode;
     }
   }
 });
 
-export const { setRootUser, switchTheme } = settingsSlice.actions;
+export const { switchTheme } = settingsSlice.actions;
 export default settingsSlice.reducer;

@@ -30,7 +30,6 @@ const generateUrl = async (state: string): Promise<string> => {
     'https://www.googleapis.com/auth/drive.appdata',
     'https://www.googleapis.com/auth/drive.file'
   ];
-  console.log(Client_ID);
   const params = new URLSearchParams({
     client_id: Client_ID,
     redirect_uri: 'http://localhost:2500/login/google',
@@ -86,7 +85,7 @@ export const getAccessTokens = async (code: string): Promise<LoginStatus> => {
       family_name: data.family_name
     };
 
-    console.log(email + ' account added successfully'); // todo: bug, this method is called multiple times
+    console.log(email + ' account added successfully');
     return { status: 1, userData };
   } catch (error: any) {
     console.error('error', error?.response?.data);

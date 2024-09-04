@@ -1,5 +1,6 @@
 import { generateEntropy, getAccessTokens, startGoogleLogin } from './services/GoogleLoginService';
 import { getAllUsers, getExistingUser, getRootUser } from './services/UserService';
+import { getRaidConfig, RaidConfig, setRaidConfig } from './services/RaidConfigService';
 
 export const initializeHandlers = (ipcMain: Electron.IpcMain): void => {
   ipcMain.handle('generateEntropy', (_, length: number) => generateEntropy(length));
@@ -17,5 +18,11 @@ export const initializeHandlers = (ipcMain: Electron.IpcMain): void => {
   });
   ipcMain.handle('getRootUser', () => {
     return getRootUser();
+  });
+  ipcMain.handle('getRaidConfig', async () => {
+    return await getRaidConfig();
+  });
+  ipcMain.handle('setRaidConfig', async (_, raidConfig: RaidConfig) => {
+    return await setRaidConfig(raidConfig);
   });
 };

@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import { RaidConfig } from '../main/services/RaidConfigService';
 
 // Custom APIs for renderer
 const api = {
@@ -10,7 +11,9 @@ const api = {
     ipcRenderer.on('navigate', (_event, path) => callback(path)),
   getExistingUser: () => ipcRenderer.invoke('getExistingUser'),
   getAllAccounts: () => ipcRenderer.invoke('getAllAccounts'),
-  getRootUser: () => ipcRenderer.invoke('getRootUser')
+  getRootUser: () => ipcRenderer.invoke('getRootUser'),
+  getRaidConfig: () => ipcRenderer.invoke('getRaidConfig'),
+  setRaidConfig: (raidConfig: RaidConfig) => ipcRenderer.invoke('setRaidConfig', raidConfig)
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

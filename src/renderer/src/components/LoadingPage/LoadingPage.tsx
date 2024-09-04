@@ -3,8 +3,7 @@ import { Typography, CircularProgress } from '@mui/material';
 import GDriveIcon from '../../assets/GdriveIcon.svg';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../../store';
-import { loginSuccess } from '../../slices/userSlice';
-import { LoginStatus } from '../../../../shared';
+import { getAccessTokens } from '../../slices/userSlice';
 import { useAppDispatch } from '../../hooks';
 
 export const LoadingPage = (): ReactElement => {
@@ -13,13 +12,11 @@ export const LoadingPage = (): ReactElement => {
 
   useEffect(() => {
     const code = window.location.href.split('code=')[1];
-    window.electronAPI.getAccessTokens(code).then((loginStatus: LoginStatus) => {
-      console.log(loginStatus);
-      if (loginStatus.status === 1) {
-        dispatch(loginSuccess(loginStatus.userData!));
+    if (code) {
+      dispatch(getAccessTokens(code)).then(() => {
         navigate('/');
-      }
-    });
+      });
+    }
   }, []);
 
   return (

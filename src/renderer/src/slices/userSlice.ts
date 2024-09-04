@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { LoginStatus } from '../../../shared';
 
-// Define a type for the slice state
 interface UserData {
   email: string;
   at_hash: string;
@@ -30,34 +30,47 @@ const initialState: UserState = {
   accounts: [...accounts]
 };
 
+export const getAccessTokens = createAsyncThunk<LoginStatus, string>(
+  'user/getAccessTokens',
+  async (code: string) => {
+    return await window.electronAPI.getAccessTokens(code);
+  }
+);
+
+export const updateRootUser = createAsyncThunk<void, string>(
+  'user/updateRootUser',
+  async (email: string) => {
+    return await window.electronAPI.setRootUser(email);
+  }
+);
+
 const userSlice = createSlice({
   name: 'user',
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    loginStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    loginSuccess: (state, action: PayloadAction<UserData>) => {
-      state.user = action.payload;
-      state.isLogged = true;
-      state.loading = false;
-      state.error = null;
-    },
-    loginFailure: (state, action: PayloadAction<string>) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
     logout: (state) => {
       state.user = null;
       state.isLogged = false;
       state.loading = false;
       state.error = null;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getAccessTokens.fulfilled, (state, action) => {
+      if (action.payload.status === 1) {
+        state.user = action.payload.userData;
+        state.isLogged = true;
+        state.loading = false;
+        state.error = null;
+      } else {
+        state.loading = false;
+        state.error = 'Login Failed';
+      }
+    });
   }
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout } = userSlice.actions;
+export const { logout } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,15 +1,23 @@
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import Box from '@mui/material/Box';
 import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import React from 'react';
-import { raidVersions, RaidVersionTypes } from '../../slices/settingsSlice';
+import { raidVersions, RaidVersionTypes, updateRaidConfig } from '../../slices/settingsSlice';
+import { updateRootUser } from '../../slices/userSlice';
 
 const Settings = () => {
   const users = useAppSelector((state) => state.users.accounts);
   const settings = useAppSelector((state) => state.settings);
   const [rootUser, setRootUser] = React.useState(settings.rootUser);
-  const [raidConfig, setRaidConfig] = React.useState(settings.raidConfig);
-  const [blockSize, setBlockSize] = React.useState(raidVersions[raidConfig]);
+  const raidConfig = settings.raidConfig;
+  const [blockSize, setBlockSize] = React.useState(raidConfig.blockSize);
+  const [raidVersion, setRaidVersion] = React.useState(raidConfig.raidVersion);
+  const dispatcher = useAppDispatch();
+
+  const handleSave = () => {
+    dispatcher(updateRaidConfig({ raidVersion, blockSize }));
+    dispatcher(updateRootUser(rootUser));
+  };
 
   return (
     <Box
@@ -47,9 +55,9 @@ const Settings = () => {
         <Select
           labelId="raidConfig"
           id="raidConfig"
-          value={raidConfig}
+          value={raidVersion}
           label="Raid Configuration"
-          onChange={(event) => setRaidConfig(event.target.value as RaidVersionTypes)}
+          onChange={(event) => setRaidVersion(event.target.value as RaidVersionTypes)}
           variant={'standard'}
         >
           {Object.keys(raidVersions).map((raid) => (
@@ -76,7 +84,7 @@ const Settings = () => {
           ))}
         </Select>
       </FormControl>
-      <Button sx={{ mr: 'auto' }} variant={'contained'}>
+      <Button sx={{ mr: 'auto' }} onClick={handleSave} variant={'contained'}>
         Save
       </Button>
     </Box>

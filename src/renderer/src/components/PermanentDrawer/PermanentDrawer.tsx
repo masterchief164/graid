@@ -87,11 +87,7 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
   ];
 
   useEffect(() => {
-    console.log('PermanentDrawer.tsx: useEffect(() => { ... })');
     window.electronAPI.navigate((path) => {
-      console.log(
-        'PermanentDrawer.tsx: useEffect(() => { ... }): window.electronAPI.onNavigate((_, path) => { ... })'
-      ); // todo: this callback is called multiple times
       navigate(path);
     });
   }, []);

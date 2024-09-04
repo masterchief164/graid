@@ -1,4 +1,5 @@
 import { LoginStatus, UserData } from '../shared';
+import { RaidConfig } from '../main/services/RaidConfigService';
 
 export interface IElectronAPI {
   openExternal: (url: string) => void;
@@ -9,6 +10,9 @@ export interface IElectronAPI {
   getExistingUser: () => Promise<LoginStatus>;
   getAllAccounts: () => Promise<UserData[]>;
   getRootUser: () => Promise<string>;
+  setRootUser: (email: string) => Promise<void>;
+  getRaidConfig: () => Promise<RaidConfig>;
+  setRaidConfig: (raidConfig: RaidConfig) => Promise<void>;
 }
 
 declare global {

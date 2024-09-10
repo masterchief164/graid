@@ -20,6 +20,7 @@ interface SettingsState {
   darkMode: boolean;
   raidConfig: RaidConfig;
 }
+
 const rootUser = await window.electronAPI.getRootUser();
 const initialRaidConfig = await window.electronAPI.getRaidConfig();
 const initialState: SettingsState = {
@@ -32,6 +33,15 @@ export const updateRaidConfig = createAsyncThunk<void, RaidConfig>(
   'settings/updateRaidConfig',
   async (raidConfig: RaidConfig) => {
     return await window.electronAPI.setRaidConfig(raidConfig);
+  }
+);
+
+export const refreshSettings = createAsyncThunk<SettingsState, void>(
+  'settings/refreshSettings',
+  async () => {
+    const rootUser = await window.electronAPI.getRootUser();
+    const raidConfig = await window.electronAPI.getRaidConfig();
+    return { rootUser, darkMode: true, raidConfig };
   }
 );
 

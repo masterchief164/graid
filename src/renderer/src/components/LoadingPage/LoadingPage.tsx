@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../../store';
 import { getAccessTokens } from '../../slices/userSlice';
 import { useAppDispatch } from '../../hooks';
+import { refreshSettings } from '../../slices/settingsSlice';
 
 export const LoadingPage = (): ReactElement => {
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ export const LoadingPage = (): ReactElement => {
     const code = window.location.href.split('code=')[1];
     if (code) {
       dispatch(getAccessTokens(code)).then(() => {
+        console.log('Login Success');
         navigate('/');
+        dispatch(refreshSettings);
       });
     }
   }, []);

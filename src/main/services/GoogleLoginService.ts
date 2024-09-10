@@ -4,10 +4,12 @@ import { getDb } from '../db/db';
 import axios from 'axios';
 import { Client_ID, Client_Secret } from '../constants';
 import * as jose from 'jose';
-import { LoginStatus, UserData } from '../../shared';
+import { LoginStatus, RefreshStatus, UserData } from '../../shared';
 import {
   checkRootUserExists,
   createUser,
+  getRootUser,
+  getUserRefreshData,
   updateRootUser,
   updateUserAuthData,
   updateUserRefreshData
@@ -70,19 +72,25 @@ export const getAccessTokens = async (code: string): Promise<LoginStatus> => {
     if (!(await checkRootUserExists())) {
       await updateRootUser(email);
     }
-    await updateUserAuthData(email, res.data.access_token);
+    const userAuthData = {
+      authToken: res.data.access_token,
+      exp: res.data.exp
+    };
+    await updateUserAuthData(email, userAuthData);
     await updateUserRefreshData(email, res.data.refresh_token);
     await createUser(data);
 
     console.log(data);
-
+    const rootUser = await getRootUser();
+    console.log('rootUser', rootUser);
     const userData: UserData = {
       email: data.email,
       name: data.name,
       at_hash: data.at_hash,
       picture: data.picture,
       given_name: data.given_name,
-      family_name: data.family_name
+      family_name: data.family_name,
+      rootUser: email === (await getRootUser())
     };
 
     console.log(email + ' account added successfully');
@@ -90,5 +98,29 @@ export const getAccessTokens = async (code: string): Promise<LoginStatus> => {
   } catch (error: any) {
     console.error('error', error?.response?.data);
     return { status: 0, userData: null };
+  }
+};
+
+export const exchangeRefreshToken = async (email: string): Promise<RefreshStatus> => {
+  try {
+    const refreshToken = await getUserRefreshData(email);
+    const payload = {
+      client_id: Client_ID,
+      client_secret: Client_Secret,
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken
+    };
+    const res = await axios.post('https://oauth2.googleapis.com/token', payload, {});
+
+    const userAuthData = {
+      authToken: res.data.access_token,
+      exp: res.data.exp
+    };
+    await updateUserAuthData(email, userAuthData);
+
+    return { status: 1, authToken: res.data.access_token };
+  } catch (error: any) {
+    console.error('error', error?.response?.data);
+    return { status: 0, authToken: null };
   }
 };

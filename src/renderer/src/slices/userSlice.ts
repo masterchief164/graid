@@ -8,6 +8,7 @@ interface UserData {
   picture: string;
   given_name: string;
   family_name: string;
+  rootUser: boolean;
 }
 
 interface UserState {
@@ -54,15 +55,19 @@ const userSlice = createSlice({
       state.isLogged = false;
       state.loading = false;
       state.error = null;
+      state.accounts = [];
     }
   },
   extraReducers: (builder) => {
     builder.addCase(getAccessTokens.fulfilled, (state, action) => {
       if (action.payload.status === 1) {
-        state.user = action.payload.userData;
+        if (action.payload.userData?.rootUser) {
+          state.user = action.payload.userData;
+        }
         state.isLogged = true;
         state.loading = false;
         state.error = null;
+        state.accounts = [...state.accounts, action.payload.userData!];
       } else {
         state.loading = false;
         state.error = 'Login Failed';

@@ -1,6 +1,7 @@
 import { getDb } from '../db/db';
-import { LoginStatus, UserData } from '../../shared';
+import { LoginStatus, UserAuthData, UserData } from '../../shared';
 import { EntryStream } from 'level-read-stream';
+import { exchangeRefreshToken } from './GoogleLoginService';
 
 const getUser = async (email: string): Promise<UserData> => {
   return JSON.parse(await getDb().get(`user:${email}`));
@@ -12,19 +13,30 @@ const createUser = async (user: UserData): Promise<void> => {
 };
 
 const getRootUser = async (): Promise<string> => {
-  return await getDb().get('user:root');
+  try {
+    return await getDb().get('user:root');
+  } catch (e: any) {
+    return '';
+  }
 };
 
 const updateRootUser = async (userEmail: string): Promise<void> => {
   await getDb().put('user:root', userEmail);
 };
 
-const updateUserAuthData = async (email: string, authData: any): Promise<void> => {
+const updateUserAuthData = async (email: string, authData: UserAuthData): Promise<void> => {
   await getDb().put(`auth:${email}`, JSON.stringify(authData));
 };
 
-const getUserAuthData = async (email: string): Promise<any> => {
-  return JSON.parse(await getDb().get(`auth:${email}`));
+const getUserAuthData = async (email: string): Promise<string> => {
+  const authDataString = await getDb().get(`auth:${email}`);
+  const userAuthData = JSON.parse(authDataString) as UserAuthData;
+  if (userAuthData.exp > new Date().getTime()) {
+    return userAuthData.authToken;
+  } else {
+    await exchangeRefreshToken(email);
+    return userAuthData.authToken;
+  }
 };
 
 const updateUserRefreshData = async (email: string, refreshToken: string): Promise<void> => {

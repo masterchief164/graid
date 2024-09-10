@@ -29,6 +29,7 @@
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@fontsource/roboto": "^5.0.14",
+    "@googleapis/drive": "^8.14.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.0",
     "@reduxjs/toolkit": "^2.2.7",

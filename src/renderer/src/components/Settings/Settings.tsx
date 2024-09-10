@@ -1,11 +1,21 @@
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import Box from '@mui/material/Box';
-import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  Input,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography
+} from '@mui/material';
 import React from 'react';
 import { raidVersions, RaidVersionTypes, updateRaidConfig } from '../../slices/settingsSlice';
 import { updateRootUser } from '../../slices/userSlice';
 
 const Settings = () => {
+  const [driveName, setDriveName] = React.useState('');
+  const newDrive = true;
   const users = useAppSelector((state) => state.users.accounts);
   const settings = useAppSelector((state) => state.settings);
   const [rootUser, setRootUser] = React.useState(settings.rootUser);
@@ -32,7 +42,27 @@ const Settings = () => {
       <Typography variant={'h3'} sx={{ mb: '5vh' }}>
         Settings
       </Typography>
-
+      <FormControl sx={{ width: '25vw', minWidth: '350px' }}>
+        <InputLabel id="demo-simple-select-label">Drive Name</InputLabel>
+        {newDrive ? (
+          <Input value={driveName} onChange={(event) => setDriveName(event.target.value)} />
+        ) : (
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={rootUser}
+            label="Age"
+            onChange={(event) => setDriveName(event.target.value as string)}
+            variant={'standard'}
+          >
+            {users.map((user) => (
+              <MenuItem key={user.email} value={user.email}>
+                {user.email}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
+      </FormControl>
       <FormControl sx={{ width: '25vw', minWidth: '350px' }}>
         <InputLabel id="demo-simple-select-label">Root User</InputLabel>
         <Select

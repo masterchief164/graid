@@ -80,10 +80,10 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
     handleCloseUserMenu();
   };
 
-  const settings = [
-    { name: 'Profile', action: handleCloseUserMenu },
-    { name: 'Logout', action: handleLogout },
-    { name: 'Settings', action: () => navigate('/settings') }
+  const newSettings = [
+    // { name: 'Folder', action: () => navigate('/new/folder') },
+    // { name: 'File', action: () => navigate('/new/file') },
+    { name: 'Drive', action: () => navigate('/new/setting?newDrive=true') }
   ];
 
   useEffect(() => {
@@ -97,7 +97,15 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
     const csrfToken = await window.electronAPI.generateEntropy(32);
     window.sessionStorage.setItem('csrfToken', csrfToken);
     window.electronAPI.startGoogleLogin(csrfToken);
+    handleCloseUserMenu();
   };
+
+  const settings = [
+    { name: 'Profile', action: handleCloseUserMenu },
+    { name: 'Logout', action: handleLogout },
+    { name: 'Add Account', action: startGoogleLogin },
+    { name: 'Settings', action: () => navigate('/settings') }
+  ];
 
   return (
     <ThemeProvider theme={theme}>
@@ -169,9 +177,11 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
                   horizontal: 'left'
                 }}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                {newSettings.map((setting) => (
+                  <MenuItem key={setting.name} onClick={setting.action}>
+                    {setting.name}
+                  </MenuItem>
+                ))}
               </Menu>
             </ListItem>
             <ListItem disablePadding component={RouterLink} to={'/'}>

@@ -29,7 +29,7 @@ const generateUrl = async (state: string): Promise<string> => {
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
     'openid',
-    'https://www.googleapis.com/auth/drive.appdata',
+    // 'https://www.googleapis.com/auth/drive.appdata'
     'https://www.googleapis.com/auth/drive.file'
   ];
   const params = new URLSearchParams({
@@ -111,13 +111,12 @@ export const exchangeRefreshToken = async (email: string): Promise<RefreshStatus
       refresh_token: refreshToken
     };
     const res = await axios.post('https://oauth2.googleapis.com/token', payload, {});
-
+    const exp = new Date().getTime() + res.data.expires_in * 1000;
     const userAuthData = {
       authToken: res.data.access_token,
-      exp: res.data.exp
+      exp: exp
     };
     await updateUserAuthData(email, userAuthData);
-
     return { status: 1, authToken: res.data.access_token };
   } catch (error: any) {
     console.error('error', error?.response?.data);

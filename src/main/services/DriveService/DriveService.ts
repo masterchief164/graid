@@ -1,21 +1,24 @@
-import { getUserAuthData, getUserRefreshData } from '../UserService';
-
-import axios from 'axios';
+import { getUserAuthData } from '../UserService';
+import axios, { AxiosResponse } from 'axios';
 import fs from 'node:fs';
-import { auth, drive } from '@googleapis/drive';
+import { getDb } from '../../db/db';
 
-const getOAuth2Client = async (email: string) => {
-  const userAuthToken: string = await getUserAuthData(email);
-  const userRefreshToken: string = await getUserRefreshData(email);
-  const oAuth2Client = new auth.OAuth2();
-  oAuth2Client.setCredentials({ access_token: userAuthToken, refresh_token: userRefreshToken });
-  return oAuth2Client;
-};
+export interface FileMetaData {
+  name: string;
+  mimeType: string;
+  kind?: string;
+  id?: string;
+}
 
 const getDriveFilesList = async (email: string) => {
-  const oAuth2Client = await getOAuth2Client(email);
   try {
-    const list = await drive({ version: 'v3', auth: oAuth2Client }).files.list({});
+    const userAuthToken: string = await getUserAuthData(email);
+    const list = await axios.get('https://www.googleapis.com/drive/v3/files', {
+      headers: {
+        Authorization: `Bearer ${userAuthToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
     console.log('DriveService.ts: getDriveFilesList: list', list.data.files);
   } catch (error: any) {
     console.log('DriveService.ts: getDriveAbout: error', error.message);
@@ -100,4 +103,92 @@ async function createFileResumable(
   console.log('DriveService.ts: createFileResumable: file uploaded');
 }
 
-export { getDriveFilesList, createFileResumable };
+const createFileMetaDataOnly = async (
+  email: string,
+  fileMetadata: FileMetaData
+): Promise<FileMetaData | undefined> => {
+  try {
+    const userAuthToken: string = await getUserAuthData(email);
+    const file: AxiosResponse<FileMetaData> = await axios.post(
+      'https://www.googleapis.com/drive/v3/files',
+      fileMetadata,
+      {
+        headers: {
+          Authorization: `Bearer ${userAuthToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    console.log('DriveService.ts: createFile: file', file.data);
+    return file.data;
+  } catch (error: any) {
+    console.log('DriveService.ts: createFile: error', error.message);
+    console.log(error.response.data);
+    console.log(error.response.data.error.errors);
+  }
+  return;
+};
+
+const createFolder = async (
+  email: string,
+  folderName: string
+): Promise<FileMetaData | undefined> => {
+  const fileMetadata: FileMetaData = {
+    name: folderName,
+    mimeType: 'application/vnd.google-apps.folder'
+  };
+  try {
+    const file = await createFileMetaDataOnly(email, fileMetadata);
+    console.log('DriveService.ts: createFolder: ', file?.name);
+    return file;
+  } catch (error: any) {
+    console.log('DriveService.ts: createFolder: error', error.message);
+    console.log(error.response.data);
+    console.log(error.response.data.error.errors);
+  }
+  return;
+};
+
+const checkIfItemExists = async (
+  email: string,
+  fileMetaData: FileMetaData
+): Promise<boolean | undefined> => {
+  let searchQuery = '';
+  searchQuery += fileMetaData.name ? `name = '${fileMetaData.name}'&` : '';
+  searchQuery += fileMetaData.mimeType ? `mimeType = '${fileMetaData.mimeType}'&` : '';
+  try {
+    const userAuthToken: string = await getUserAuthData(email);
+    const url = `https://www.googleapis.com/drive/v3/files?q=${searchQuery}`;
+    console.log(url);
+    const file = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${userAuthToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log('DriveService.ts: checkIfItemExists: file', file.data);
+    return file.data.files.length > 0;
+  } catch (error: any) {
+    console.log('DriveService.ts: checkIfItemExists: error', error.message);
+    console.log(error.response.data);
+    console.log(error.response.data.error.errors);
+  }
+  return;
+};
+
+const saveRootFolderId = async (email: string, rootFolderId: string) => {
+  try {
+    await getDb().put(`user:${email}`, rootFolderId);
+  } catch (e) {
+    console.log('DriveService.ts: saveRootFolderId: error', e);
+  }
+}; // TODO: initial task
+
+export {
+  getDriveFilesList,
+  createFileResumable,
+  createFolder,
+  checkIfItemExists,
+  initiateResumableUpload,
+  saveRootFolderId
+};

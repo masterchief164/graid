@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import path from 'node:path';
 import { initializeHandlers } from './handlers';
-import expressApp from './services/experssServer';
+import expressApp from './services/expressServer';
 import express from 'express';
 import fs from 'node:fs/promises';
 import { getDb } from './db/db';

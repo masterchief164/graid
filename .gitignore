@@ -10,3 +10,5 @@ my-db/
 
 *.js
 *.d.ts
+
+test-image.jpg

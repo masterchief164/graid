@@ -31,11 +31,12 @@ const updateUserAuthData = async (email: string, authData: UserAuthData): Promis
 const getUserAuthData = async (email: string): Promise<string> => {
   const authDataString = await getDb().get(`auth:${email}`);
   const userAuthData = JSON.parse(authDataString) as UserAuthData;
-  if (userAuthData.exp > new Date().getTime()) {
+  // console.log('userAuthData', userAuthData.exp - new Date().getTime());
+  if (userAuthData.exp >= new Date().getTime()) {
     return userAuthData.authToken;
   } else {
     await exchangeRefreshToken(email);
-    return userAuthData.authToken;
+    return await getUserAuthData(email);
   }
 };
 

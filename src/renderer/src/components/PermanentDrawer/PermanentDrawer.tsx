@@ -81,8 +81,8 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = (permanentDrawerProps) =
   };
 
   const newSettings = [
-    // { name: 'Folder', action: () => navigate('/new/folder') },
-    // { name: 'File', action: () => navigate('/new/file') },
+    { name: 'Folder', action: () => navigate('/new/folder') },
+    { name: 'File', action: () => navigate('/new/file') },
     { name: 'Drive', action: () => navigate('/new/setting?newDrive=true') }
   ];
 
